@@ -45,15 +45,6 @@ function initializeServiceWorker() {
   // We first must register our ServiceWorker here before any of the code in
   // sw.js is executed.
   // B1. TODO - Check if 'serviceWorker' is supported in the current browser
-  // B2. TODO - Listen for the 'load' event on the window object.
-  // Steps B3-B6 will be *inside* the event listener's function created in B2
-  // B3. TODO - Register './sw.js' as a service worker (The MDN article
-  //            "Using Service Workers" will help you here)
-  // B4. TODO - Once the service worker has been successfully registered, console
-  //            log that it was successful.
-  // B5. TODO - In the event that the service worker registration fails, console
-  //            log that it has failed.
-  // STEPS B6 ONWARDS WILL BE IN /sw.js
   if("serviceWorker" in navigator){
     try{
           window.addEventListener('load', getServiceWorker);
@@ -74,8 +65,16 @@ function initializeServiceWorker() {
         } else if (registration.active) {
           console.log("Service worker active");
         }
-}
-
+  }
+  // B2. TODO - Listen for the 'load' event on the window object.
+  // Steps B3-B6 will be *inside* the event listener's function created in B2
+  // B3. TODO - Register './sw.js' as a service worker (The MDN article
+  //            "Using Service Workers" will help you here)
+  // B4. TODO - Once the service worker has been successfully registered, console
+  //            log that it was successful.
+  // B5. TODO - In the event that the service worker registration fails, console
+  //            log that it has failed.
+  // STEPS B6 ONWARDS WILL BE IN /sw.js
 }
 
 /**
@@ -90,24 +89,36 @@ async function getRecipes() {
   // EXPOSE - START (All expose numbers start with A)
   // A1. TODO - Check local storage to see if there are any recipes.
   //            If there are recipes, return them.
-  if(localStorage.getItem('recipes') !== null){
-    var recipe = localStorage.getItem('recipes');
-    return JSON.parse(recipe);
+  if (localStorage.getItem('recipes') !== null) {
+    return JSON.parse(localStorage.getItem('recipes'));
   }
-  
   /**************************/
   // The rest of this method will be concerned with requesting the recipes
   // from the network
   // A2. TODO - Create an empty array to hold the recipes that you will fetch
+  var recipe_array = []
   // A3. TODO - Return a new Promise. If you are unfamiliar with promises, MDN
   //            has a great article on them. A promise takes one parameter - A
   //            function (we call these callback functions). That function will
   //            take two parameters - resolve, and reject. These are functions
   //            you can call to either resolve the Promise or Reject it.
-  /**************************/
-  var recipe_array = []
   return new Promise(callbackFuncti); 
-  
+  async function callbackFuncti(resolve, reject) {
+    for (var i = 0; i < RECIPE_URLS.length; i++) {
+      try {
+            var response = await fetch(RECIPE_URLS[i]);
+            var resp_json = await response.json();
+            recipe_array.push(resp_json);
+      } 
+      catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    }
+    saveRecipesToStorage(recipe_array);
+    resolve(recipe_array);
+  } 
+  /**************************/
   // A4-A11 will all be *inside* the callback function we passed to the Promise
   // we're returning
   /**************************/
@@ -130,21 +141,6 @@ async function getRecipes() {
   //            resolve() method.
   // A10. TODO - Log any errors from catch using console.error
   // A11. TODO - Pass any errors to the Promise's reject() function
-  async function callbackFuncti(resolve, reject) {
-    for (var i = 0; i < RECIPE_URLS.length; i++) {
-      try {
-            var response = await fetch(RECIPE_URLS[i]);
-            var resp_json = await response.json();
-            recipe_array.push(resp_json);
-      } 
-      catch (e) {
-        console.error(e);
-        reject(e);
-      }
-    }
-    saveRecipesToStorage(recipe_array);
-    resolve(recipe_array);
-  } 
 }
 
 /**
