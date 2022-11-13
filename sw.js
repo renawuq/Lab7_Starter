@@ -42,17 +42,13 @@ self.addEventListener('fetch', function (event) {
   // B7. TODO - Respond to the event by opening the cache using the name we gave
   //            above (CACHE_NAME)
   event.respondWith(caches.open(CACHE_NAME).then((cache) => {
-    // Go to the cache first
     return cache.match(event.request).then((cachedResponse) => {
-      // Return a cached response if we have one
       if (cachedResponse) {
         return cachedResponse;
       }
-      // Otherwise, hit the network
-      return fetch(event.request).then((fetchedResponse) => {
-        // Add the network response to the cache for later visits
+      else 
+        return fetch(event.request).then((fetchedResponse) => {
         cache.put(event.request, fetchedResponse.clone());
-        // Return the network response
         return fetchedResponse;
       });
     });
