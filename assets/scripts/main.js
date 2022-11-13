@@ -54,29 +54,46 @@ function initializeServiceWorker() {
   // B5. TODO - In the event that the service worker registration fails, console
   //            log that it has failed.
   // STEPS B6 ONWARDS WILL BE IN /sw.js
-  if("serviceWorker" in navigator){
-    try{
-          window.addEventListener('load', getServiceWorker);
-    }
-    catch(e){
-          console.error(`Registration failed with ${e}`);
-    }
-  } 
-  else{
-        console.error(`serviceworkers not supported in browser`);
+//   if("serviceWorker" in navigator){
+//     try{
+//           window.addEventListener('load', getServiceWorker);
+//     }
+//     catch(e){
+//           console.error(`Registration failed with ${e}`);
+//     }
+//   } 
+//   else{
+//         console.error(`serviceworkers not supported in browser`);
+//   }
+//   async function getServiceWorker(){
+//     const registration = await navigator.serviceWorker.register("./sw.js");
+//         if (registration.installing) {
+//           console.log("Service worker installing");
+//         } else if (registration.waiting) {
+//           console.log("Service worker installed");
+//         } else if (registration.active) {
+//           console.log("Service worker active");
+//         }
+// }
+if ("serviceWorker" in navigator) {
+  try {
+    window.addEventListener('load', async ()=> {
+      const registration = await navigator.serviceWorker.register("./sw.js");
+      if (registration.installing) {
+        console.log("Service worker installing");
+      } else if (registration.waiting) {
+        console.log("Service worker installed");
+      } else if (registration.active) {
+        console.log("Service worker active");
+      }
+    });
+  } catch (error) {
+    console.error(`Registration failed with ${error}`);
   }
-  async function getServiceWorker(){
-    const registration = await navigator.serviceWorker.register("./sw.js");
-    if (registration.installing) {
-      console.log("Service worker installing");
-    } 
-    else if (registration.waiting) {
-      console.log("Service worker installed");
-    } 
-    else if (registration.active) {
-      console.log("Service worker active");
-    }
-  }
+
+} else {
+  console.error(`serviceworkers not supported in browser`);
+}
 }
 
 /**
